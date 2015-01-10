@@ -3,7 +3,7 @@ __version__ = "2.0.2"
 __author__ = "Tarek Galal"
 
 import sys, argparse, yowsup, logging
-from yowsup.demos import cli, echoclient, sendclient
+from yowsup.demos import cli, echoclient, sendclient, filerclient
 from yowsup.registration import WACodeRequest, WARegRequest
 
 HELP_CONFIG = """
@@ -217,6 +217,10 @@ class DemosArgParser(YowArgParser):
                                                                      "wait for server receipt and exit",
                               metavar=("phone", "message"), nargs = 2)
 
+        persistorOpts = self.add_argument_group("Filer client demo")
+        persistorOpts.add_argument('-f', '--filer', action = "store", help = "Start the Yowsup Filer client.",
+                                   metavar=("inboxpath", "outboxpath", "sentpath"), nargs = 3)
+
     def process(self):
         super(DemosArgParser, self).process()
         if self.args["yowsup"]:
@@ -225,6 +229,8 @@ class DemosArgParser(YowArgParser):
             self.startEcho()
         elif self.args["send"]:
             self.startSendClient()
+        elif self.args["filer"]:
+            self.startFilerClient()
         else:
             return False
         return True
@@ -273,6 +279,17 @@ class DemosArgParser(YowArgParser):
             print("\nYowsdown")
             sys.exit(0)
 
+    def startFilerClient(self):
+        credentials = self._getCredentials()
+        if not credentials:
+            print("Error: You must specify a configuration method")
+            sys.exit(1)
+        try:
+            stack = filerclient.YowsupFilerStack(credentials, (self.args["filer"][0], self.args["filer"][1], self.args["filer"][2]), self.args["moxie"])
+            stack.start()
+        except KeyboardInterrupt:
+            print("\nYowsdown")
+            sys.exit(0)
 
 if __name__ == "__main__":
     args = sys.argv
