@@ -68,7 +68,7 @@ class FilerLayer(YowInterfaceLayer):
 
         before = []
         while 1:
-            time.sleep(5)
+            time.sleep(0.1)
             after = dict([(f, None) for f in os.listdir(outboxPath)])
             added = [f for f in after if not f in before]
 
