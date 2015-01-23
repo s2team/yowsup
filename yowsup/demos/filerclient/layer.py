@@ -24,13 +24,13 @@ class FilerLayer(YowInterfaceLayer):
         inboxPath = self.getProp(self.__class__.PROP_INBOXPATH)
         self.mkdir_recursive(inboxPath)
 
-        filename = "%s/%s.jsonpickle" % (inboxPath, messageProtocolEntity.getId())
-
-        print("Received: %s from %s. Writing to file %s" % (
+        if messageProtocolEntity._type == 'text':
+            filename = "%s/%s.jsonpickle" % (inboxPath, messageProtocolEntity.getId())
+            print("Received: %s from %s. Writing to file %s" % (
             messageProtocolEntity.getBody(), messageProtocolEntity.getFrom(False), filename))
 
-        with open(filename, "w") as output:
-            output.write(jsonpickle.encode(messageProtocolEntity))
+            with open(filename, "w") as output:
+                output.write(jsonpickle.encode(messageProtocolEntity))
 
         receipt = OutgoingReceiptProtocolEntity(messageProtocolEntity.getId(), messageProtocolEntity.getFrom())
         self.toLower(receipt)
